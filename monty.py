@@ -23,7 +23,7 @@ def benchmark(irp):
     res_file = open("results.txt", "a+")
     k = irp.bit_length() - 1
     r = 1 << k
-    nums = [random.randint(r >> 1, r) for _ in range(10000)]
+    nums = [random.randint(r >> 1, r) for _ in range(100000)]
     e = random.randint(r >> 1, r)
 
     def exp(num):

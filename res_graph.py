@@ -31,6 +31,6 @@ for algo_index in range(3):
 
 plt.title("Comparison of finite field modular exponentiation algorithms")
 plt.xlabel("GF(2^k) power k")
-plt.ylabel("Time in seconds per 10000 exponentiations")
+plt.ylabel("Time in seconds per 100000 exponentiations")
 plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 plt.savefig("results.svg",bbox_inches='tight')
