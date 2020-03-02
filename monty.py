@@ -23,7 +23,7 @@ def benchmark(irp):
     res_file = open("results.txt", "a+")
     k = irp.bit_length() - 1
     r = 1 << k
-    nums = [random.randint(r >> 1, r) for _ in range(10000)]
+    nums = [random.randint(r >> 1, r) for _ in range(2)]
     e = random.randint(r >> 1, r)
 
     def exp(num):
@@ -32,7 +32,9 @@ def benchmark(irp):
     t0 = time.perf_counter()
     res = list(map(exp, nums))
     t1 = time.perf_counter()
-    print(k, 0, t1 - t0, file=res_file)
+    print(hex(res[0])[2:])
+    t_stan = t1 - t0
+    print(k, 0, t_stan)
 
     def mon_exp(num):
         return galois.mon_exp(num, e, irp)
@@ -40,7 +42,9 @@ def benchmark(irp):
     t0 = time.perf_counter()
     res = list(map(mon_exp, nums))
     t1 = time.perf_counter()
-    print(k, 1, t1 - t0, file=res_file)
+    print(hex(res[0])[2:])
+    t_mont = t1 - t0
+    print(k, 1, t_mont)
 
     def mon_exp_kor(num):
         return galois.mon_exp_kor(num, e, irp)
@@ -48,12 +52,16 @@ def benchmark(irp):
     t0 = time.perf_counter()
     res = list(map(mon_exp_kor, nums))
     t1 = time.perf_counter()
-    print(k, 2, t1 - t0, file=res_file)
+    print(hex(res[0])[2:])
+    t_par_mont = t1 - t0
+    print(k, 2, t_par_mont)
+    print("Percantages:", "%0.2f" % (100 - (t_par_mont/t_stan*100)), "percent to standard and", "%0.2f" % (100 - (t_par_mont/t_mont*100)), "percent to ordinary Montgomery")
 
 
-open("results.txt", "w+")
-for irp in primitive_polynomials_GF2.irp_list:
-    benchmark(irp)
+# open("results.txt", "w+")
+# for irp in primitive_polynomials_GF2.irp_list:
+irp = (1 << 984) + (1 << 24) + (1 << 9) + (1 << 3) + 1
+benchmark(irp)
 
 # a_mont = galois.mon_mult(a, r_sq)
 # b_mont = galois.mon_mult(b, r_sq)
