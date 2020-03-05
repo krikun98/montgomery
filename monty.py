@@ -2,7 +2,7 @@
 import time
 import random
 import primitive_polynomials_GF2
-import galois
+import galois_math
 
 
 def htoi(n):
@@ -20,40 +20,53 @@ def hexprint(arr):
 
 
 def benchmark(irp):
+    field = galois_math.Galois(irp)
     res_file = open("results.txt", "a+")
     k = irp.bit_length() - 1
     r = 1 << k
     nums = [random.randint(r >> 1, r) for _ in range(10000)]
     e = random.randint(r >> 1, r)
 
+    print('k =', k, 'e =', e, 'num =', nums[0])
+
     def exp(num):
-        return galois.exp_ltor(num, e, irp)
+        return field.exp_ltor(num, e)
 
     t0 = time.perf_counter()
     res = list(map(exp, nums))
+    print(k, '0', res[0])
     t1 = time.perf_counter()
     print(k, 0, t1 - t0, file=res_file)
 
     def mon_exp(num):
-        return galois.mon_exp(num, e, irp)
+        return field.mon_exp(num, e)
 
     t0 = time.perf_counter()
     res = list(map(mon_exp, nums))
+    print(k, '1', res[0])
     t1 = time.perf_counter()
     print(k, 1, t1 - t0, file=res_file)
 
     def mon_exp_kor(num):
-        return galois.mon_exp_kor(num, e, irp)
+        return field.mon_exp_kor(num, e)
 
     t0 = time.perf_counter()
     res = list(map(mon_exp_kor, nums))
+    print(k, '2', res[0])
     t1 = time.perf_counter()
     print(k, 2, t1 - t0, file=res_file)
 
 
-open("results.txt", "w+")
-for irp in primitive_polynomials_GF2.irp_list:
-    benchmark(irp)
+# open("results.txt", "w+")
+# for irp in primitive_polynomials_GF2.irp_list:
+#    benchmark(irp)
+
+num = 5
+e = 8
+field = galois_math.Galois((1 << 3) + (1 << 1) + 1)
+print(field.exp(num, e))
+print(field.mon_exp(num, e))
+print(field.mon_exp_kor(num, e))
 
 # a_mont = galois.mon_mult(a, r_sq)
 # b_mont = galois.mon_mult(b, r_sq)

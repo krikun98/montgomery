@@ -1,3 +1,6 @@
+class Decimal:
+
+
 def xgcd(a, b):
     # return (g, x, y) such that a*x + b*y = g = gcd(a, b)
     x0, x1, y0, y1 = 0, 1, 1, 0
