@@ -23,16 +23,15 @@ def benchmark(irp):
     res_file = open("results.txt", "a+")
     k = irp.bit_length() - 1
     r = 1 << k
-    nums = [random.randint(r >> 1, r) for _ in range(2)]
+    nums = [random.randint(r >> 1, r) for _ in range(1000)]
     e = random.randint(r >> 1, r)
 
     def exp(num):
         return galois.exp_ltor(num, e, irp)
 
     t0 = time.perf_counter()
-    res = list(map(exp, nums))
+    map(exp, nums)
     t1 = time.perf_counter()
-    print(hex(res[0])[2:])
     t_stan = t1 - t0
     print(k, 0, t_stan)
 
@@ -40,9 +39,8 @@ def benchmark(irp):
         return galois.mon_exp(num, e, irp)
 
     t0 = time.perf_counter()
-    res = list(map(mon_exp, nums))
+    map(mon_exp, nums)
     t1 = time.perf_counter()
-    print(hex(res[0])[2:])
     t_mont = t1 - t0
     print(k, 1, t_mont)
 
@@ -50,9 +48,8 @@ def benchmark(irp):
         return galois.mon_exp_kor(num, e, irp)
 
     t0 = time.perf_counter()
-    res = list(map(mon_exp_kor, nums))
+    map(mon_exp_kor, nums)
     t1 = time.perf_counter()
-    print(hex(res[0])[2:])
     t_par_mont = t1 - t0
     print(k, 2, t_par_mont)
     print("Percantages:", "%0.2f" % (100 - (t_par_mont/t_stan*100)), "percent to standard and", "%0.2f" % (100 - (t_par_mont/t_mont*100)), "percent to ordinary Montgomery")
