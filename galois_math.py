@@ -1,15 +1,15 @@
 class Galois:
     def __init__(self, irp=int("100011011", 2)):
         self.irp = irp
-
-    def __mont_init__(self):
         self.k = self.irp.bit_length() - 1
+
+    def __mon_init__(self):
         self.r = 1 << self.k
-        self.rt = self.r ^ self.irp
-        self.r_sq = self.mult(self.rt, self.rt)
+        rt = self.r ^ self.irp
+        self.r_sq = self.mult(rt, rt)
 
     def __gf2divmod(self, avec, bvec):
-        na = avec[0].bit_length()
+        na = avec[0].bit_length() or 1
         nd = bvec[0].bit_length()
         i = na - nd
         q = 0
@@ -35,8 +35,7 @@ class Galois:
         return tuple(brow)
 
     def mult(self, a, b):
-        k = self.irp.bit_length() - 1
-        irp_mult = self.irp - (1 << k)
+        irp_mult = self.irp ^ (1 << self.k)
         p = 0
         while a > 0 and b > 0:
             c = 0
@@ -44,9 +43,9 @@ class Galois:
                 p ^= a
             b >>= 1
             a <<= 1
-            if a & 1 << k:
+            if a & 1 << self.k:
                 c = 1
-                a -= 1 << k
+                a -= 1 << self.k
             if c & 1:
                 a ^= irp_mult
         return p
@@ -73,7 +72,7 @@ class Galois:
 
     def exp_ltor(self, a, e):
         c = 1
-        for i in range(e.bit_length() - 1, -1, -1):
+        for i in range(self.k - 1, -1, -1):
             c = self.mult(c, c)
             if e & 1 << i:
                 c = self.mult(c, a)
@@ -84,9 +83,8 @@ class Galois:
         return u
 
     def mon_redc(self, a):
-        r = 1 << self.irp.bit_length() - 1
-        _, irp_tick, r_inv = self.__blankinship(self.irp, r)
-        m = (self.mult((a & (r - 1)), irp_tick) & (r - 1))
+        _, irp_tick, r_inv = self.__blankinship(self.irp, self.r)
+        m = (self.mult((a & (self.r - 1)), irp_tick) & (self.r - 1))
         t = self.mult((a ^ self.mult(m, self.irp)), r_inv)
         if t > self.irp:
             return t ^ self.irp
@@ -99,7 +97,7 @@ class Galois:
 
     def mon_mult(self, a, b):
         c = 0
-        for i in range(0, self.irp.bit_length() - 1):
+        for i in range(self.k):
             if (1 << i) & a:
                 c = c ^ b
             if 1 & c:
@@ -112,31 +110,30 @@ class Galois:
 
     def mon_square(self, a):
         c = 0
-        k = self.irp.bit_length()
-        for i in range(k - 1):
+        for i in range(self.k):
             c += (a & 1) << 2 * i
             a >>= 1
-        for i in range(k - 1):
+        for i in range(self.k):
             if c & 1:
                 c ^= self.irp
             c >>= 1
         return c
 
     def mon_exp(self, a, e):
-        self.__mont_init__()
+        self.__mon_init__()
         c = self.montify(1)
         m = self.montify(a)
         for i in range(self.k):
             if e & (1 << i):
                 c = self.mon_mult(c, m)
             m = self.mon_square(m)
-        return self.mon_redc(c)
+        return self.mon_mult(c, 1)
 
     def mon_mult_and_square(self, m, c):
         t = m
         mul = 0
         sqr = 0
-        for i in range(self.irp.bit_length() - 2, -1, -1):
+        for i in range(self.k - 1, -1, -1):
             if t & 1:
                 t = t ^ self.irp
             t >>= 1
@@ -147,7 +144,7 @@ class Galois:
         return sqr, mul
 
     def mon_exp_kor(self, a, e):
-        self.__mont_init__()
+        self.__mon_init__()
         c = self.montify(1)
         m = self.montify(a)
         for i in range(self.k):
@@ -155,4 +152,4 @@ class Galois:
                 m, c = self.mon_mult_and_square(m, c)
             else:
                 m = self.mon_square(m)
-        return self.mon_redc(c)
+        return self.mon_mult(c, 1)
