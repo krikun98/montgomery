@@ -21,7 +21,7 @@ def hexprint(arr):
 
 
 def benchmark(irp):
-    length = 1000000
+    length = 10
     res_file = open("results.txt", "a+")
     k = irp.bit_length()
     r = 1 << (k - 1)
@@ -32,25 +32,28 @@ def benchmark(irp):
         return galois.exp_ltor(num, e, irp)
 
     t0 = time.perf_counter()
-    res = map(exp, nums)
+    res = list(map(exp, nums))
     t1 = time.perf_counter()
     t_stan = t1 - t0
     print(k, 0, t_stan, file=res_file)
+    print(res[0])
 
     def mon_exp(num):
         return galois.mon_exp(num, e, irp)
 
     t0 = time.perf_counter()
-    res = map(mon_exp, nums)
+    res = list(map(mon_exp, nums))
     t1 = time.perf_counter()
     t_mont = t1 - t0
     print(k, 1, t_mont, file=res_file)
+    print(res[0])
 
     def mon_exp_kor(num):
         return galois.mon_exp_kor(num, e, irp)
 
     t0 = time.perf_counter()
-    res = map(mon_exp_kor, nums)
+    res = list(map(mon_exp_kor, nums))
+    print(res[0])
     t1 = time.perf_counter()
     t_par_mont = t1 - t0
     print(k, 2, t_par_mont, file=res_file)
