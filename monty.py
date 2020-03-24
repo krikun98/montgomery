@@ -2,6 +2,7 @@
 import time
 import random
 import primitive_polynomials_GF2
+import rfc_polynomials
 import galois
 
 
@@ -21,44 +22,45 @@ def hexprint(arr):
 
 def benchmark(irp):
     res_file = open("results.txt", "a+")
-    k = irp.bit_length() - 1
-    r = 1 << k
-    nums = [random.randint(r >> 1, r) for _ in range(1000)]
+    k = irp.bit_length()
+    r = 1 << (k - 1)
+    nums = [random.randint(r >> 1, r) for _ in range(1000000)]
     e = random.randint(r >> 1, r)
 
     def exp(num):
         return galois.exp_ltor(num, e, irp)
 
     t0 = time.perf_counter()
-    map(exp, nums)
+    res = map(exp, nums)
     t1 = time.perf_counter()
     t_stan = t1 - t0
-    print(k, 0, t_stan)
+    print(k, 0, t_stan, file=res_file)
 
     def mon_exp(num):
         return galois.mon_exp(num, e, irp)
 
     t0 = time.perf_counter()
-    map(mon_exp, nums)
+    res = map(mon_exp, nums)
     t1 = time.perf_counter()
     t_mont = t1 - t0
-    print(k, 1, t_mont)
+    print(k, 1, t_mont, file=res_file)
 
     def mon_exp_kor(num):
         return galois.mon_exp_kor(num, e, irp)
 
     t0 = time.perf_counter()
-    map(mon_exp_kor, nums)
+    res = map(mon_exp_kor, nums)
     t1 = time.perf_counter()
     t_par_mont = t1 - t0
-    print(k, 2, t_par_mont)
-    print("Percantages:", "%0.2f" % (100 - (t_par_mont/t_stan*100)), "percent to standard and", "%0.2f" % (100 - (t_par_mont/t_mont*100)), "percent to ordinary Montgomery")
+    print(k, 2, t_par_mont, file=res_file)
+    print("Percentages:", "%0.2f" % (100 - (t_par_mont/t_stan*100)), "percent to standard and", "%0.2f" % (100 - (t_par_mont/t_mont*100)), "percent to ordinary Montgomery")
+    print("Also:", "%0.2f" % (100 - (t_mont/t_stan*100)), "percent Montgomery to standard")
 
 
-# open("results.txt", "w+")
-# for irp in primitive_polynomials_GF2.irp_list:
-irp = (1 << 984) + (1 << 24) + (1 << 9) + (1 << 3) + 1
-benchmark(irp)
+# irp = (1 << 984) + (1 << 24) + (1 << 9) + (1 << 3) + 1
+open("results.txt", "w+")
+for irp in rfc_polynomials.irp_list:
+    benchmark(irp)
 
 # a_mont = galois.mon_mult(a, r_sq)
 # b_mont = galois.mon_mult(b, r_sq)
