@@ -21,11 +21,12 @@ def hexprint(arr):
 
 
 def benchmark(irp):
+    length = 1000000
     res_file = open("results.txt", "a+")
     k = irp.bit_length()
     r = 1 << (k - 1)
-    nums = [random.randint(r >> 1, r) for _ in range(1000000)]
-    e = random.randint(r >> 1, r)
+    nums = [random.randint(r >> 1, r - 1) for _ in range(length)]
+    e = random.randint(r >> 1, r - 1)
 
     def exp(num):
         return galois.exp_ltor(num, e, irp)
