@@ -45,7 +45,7 @@ class Galois:
             a <<= 1
             if a & 1 << self.k:
                 c = 1
-                a -= 1 << self.k
+                a ^= 1 << self.k
             if c & 1:
                 a ^= irp_mult
         return p
@@ -108,11 +108,11 @@ class Galois:
     def montify(self, a):
         return self.mon_mult(a, self.r_sq)
 
+    # TODO: fix squaring, it's very slow
     def mon_square(self, a):
         c = 0
         for i in range(self.k):
-            c += (a & 1) << 2 * i
-            a >>= 1
+            if a & (1 << i): c ^= 1 << 2 * i
         for i in range(self.k):
             if c & 1:
                 c ^= self.irp
@@ -120,13 +120,12 @@ class Galois:
         return c
 
     def mon_exp(self, a, e):
-        self.__mon_init__()
         c = self.montify(1)
         m = self.montify(a)
         for i in range(self.k):
             if e & (1 << i):
                 c = self.mon_mult(c, m)
-            m = self.mon_square(m)
+            m = self.mon_mult(m, m)
         return self.mon_mult(c, 1)
 
     def mon_mult_and_square(self, m, c):
@@ -144,12 +143,11 @@ class Galois:
         return sqr, mul
 
     def mon_exp_kor(self, a, e):
-        self.__mon_init__()
         c = self.montify(1)
         m = self.montify(a)
         for i in range(self.k):
             if e & (1 << i):
                 m, c = self.mon_mult_and_square(m, c)
             else:
-                m = self.mon_square(m)
+                m = self.mon_mult(m, m)
         return self.mon_mult(c, 1)
