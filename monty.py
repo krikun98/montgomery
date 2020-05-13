@@ -5,7 +5,14 @@ import primitive_polynomials_GF2
 import galois_math
 import rfc_polynomials
 
-filename = "results_bignum.txt"
+mode = "bignum"
+
+filename = "results.txt"
+irp_list = primitive_polynomials_GF2.irp_list
+if mode == "bignum":
+    filename = "results_bignum.txt"
+    irp_list = rfc_polynomials.irp_list
+
 
 def hexprint(arr):
     for el in arr:
@@ -62,5 +69,5 @@ def benchmark(irp):
     print("Also:", "%0.2f" % (100 - (t_mont/t_stan*100)), "percent Montgomery to standard")
 
 
-for irp in rfc_polynomials.irp_list[0:6]:
+for irp in irp_list:
     benchmark(irp)
