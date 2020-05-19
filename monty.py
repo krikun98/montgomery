@@ -5,7 +5,7 @@ import primitive_polynomials_GF2
 import galois_math
 import rfc_polynomials
 
-mode = "bignum"
+mode = "num"
 
 filename = "results.txt"
 irp_list = primitive_polynomials_GF2.irp_list
@@ -23,7 +23,7 @@ def hexprint(arr):
 def benchmark(irp):
     field = galois_math.Galois(irp)
     field.__mon_init__()
-    length = 1
+    length = 10000
     res_file = open(filename, "a+")
     k = irp.bit_length()
     print(k)

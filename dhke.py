@@ -76,4 +76,4 @@ def benchmark(prime_list):
                 print(k_acc_b)
 
 
-benchmark(rfc_polynomials.irp_list[0:6])
+benchmark(rfc_polynomials.irp_list[6:])

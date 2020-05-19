@@ -1,8 +1,9 @@
 import argparse
 import matplotlib.pyplot as plt
 
-mode = "bignum"
+mode = "num"
 type = "absolute"
+language = "ru"
 title = ""
 ylabel = ""
 filename = ""
@@ -12,20 +13,33 @@ if mode == "DHKE":
     title = "Comparison of finite field modular exponentiation algorithms for DHKE implementations"
     ylabel = "Time in seconds per key exchange"
     k_mod = 1
+    if language == "ru":
+        title = "Сравнение алгоритмов возведения в степень по модулю для алгоритма Диффи-Хеллмана"
+        ylabel = "Время на операцию обмена ключами"
 elif mode == "bignum":
     filename = "results_bignum"
     title = "Comparison of finite field modular exponentiation algorithms for RFC polynomials"
     ylabel = "Time in seconds per exponentiation"
+    if language == "ru":
+        title = "Сравнение алгоритмов возведения в степень по модулю для алгоритма Диффи-Хеллмана"
+        ylabel = "Время на операцию обмена ключами"
+        #title = "Сравнение алгоритмов возведения в степень по модулю для многочленов IETF"
+        #ylabel = "Время на операцию возведения в степень"
 elif mode == "num":
     filename = "results"
     title = "Comparison of finite field modular exponentiation algorithms for small polynomials"
     ylabel = "Time in seconds per 10000 exponentiations"
     k_mod=-1
+    if language == "ru":
+        title = "Сравнение алгоритмов возведения в степень по модулю для небольших многочленов"
+        ylabel = "Время на 10000 операций возведения в степень"
 
 parser = argparse.ArgumentParser(description='Comparison of finite field modular exponentiation algorithms')
 parser.add_argument("-s", "--source", default=filename+".txt")
 args = parser.parse_args()
 algo_types = ["Standard exponentiation", "Montgomery exponentiation", "Parallel Montgomery exponentiation"]
+if language == "ru":
+    algo_types = ["Алгоритм 'слева направо'", "Алгоритм Монтгомери", "Параллельный алгоритм Монтгомери"]
 bit_length = []
 data = [[], [], []]
 with open(args.source) as f:
@@ -74,8 +88,12 @@ if type == 'relative':
     filename += "_percent"
     plt.ylim(0, 100)
     ylabel = ylabel.replace("Time in seconds", "Percentage of time")
+    ylabel = ylabel.replace("Время", "Процент времени")
 
 plt.xlabel("GF(2^k) order k")
+if language == "ru":
+    filename += "_ru"
+    plt.xlabel("Степень конечного поля GF(2^k)")
 plt.ylabel(ylabel)
 plt.legend(bbox_to_anchor=(0, -0.15), loc=2)
 plt.grid(True)

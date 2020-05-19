@@ -35,7 +35,6 @@ class Galois:
         return tuple(brow)
 
     def mult(self, a, b):
-        irp_mult = self.irp ^ (1 << self.k)
         p = 0
         while a > 0 and b > 0:
             c = 0
@@ -45,9 +44,8 @@ class Galois:
             a <<= 1
             if a & 1 << self.k:
                 c = 1
-                a ^= 1 << self.k
             if c & 1:
-                a ^= irp_mult
+                a ^= self.irp
         return p
 
     def add(self, a, b):
