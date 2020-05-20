@@ -12,7 +12,8 @@ def benchmark(prime_list):
         field.__mon_init__()
         g = 2
         for i in range(test_length):
-            print(field.k)
+            k = field.k + 1
+            print(k)
             res_file = open("results_dhke.txt", "a+")
             a = random.randint(field.r >> 1, field.r - 1)
             b = random.randint(field.r >> 1, field.r - 1)
@@ -28,7 +29,7 @@ def benchmark(prime_list):
                 print(b)
             k_sta_a = k_a
             k_sta_b = k_b
-            print(field.k, '0', t1 - t0, file=res_file)
+            print(k, '0', t1 - t0, file=res_file)
             t0 = time.perf_counter()
             g_a = field.mon_exp(g, a)
             g_b = field.mon_exp(g, b)
@@ -45,7 +46,7 @@ def benchmark(prime_list):
                 print(k_b)
             k_mon_a = k_a
             k_mon_b = k_b
-            print(field.k, '1', t1 - t0, file=res_file)
+            print(k, '1', t1 - t0, file=res_file)
             t0 = time.perf_counter()
             g_a = field.mon_exp_kor(g, a)
             g_b = field.mon_exp_kor(g, b)
@@ -62,7 +63,7 @@ def benchmark(prime_list):
                 print(k_b)
             k_acc_a = k_a
             k_acc_b = k_b
-            print(field.k, '2', t1 - t0, file=res_file)
+            print(k, '2', t1 - t0, file=res_file)
             if (k_acc_a != k_mon_a) | (k_sta_a != k_acc_a):
                 print("ERROR3", field.k)
                 print(a)
@@ -76,4 +77,5 @@ def benchmark(prime_list):
                 print(k_acc_b)
 
 
-benchmark(rfc_polynomials.irp_list[6:])
+for i in range(1000):
+    benchmark(rfc_polynomials.irp_list)
