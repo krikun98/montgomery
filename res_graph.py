@@ -94,7 +94,7 @@ def draw_graph(params):
     plt.ylabel(ylabel)
     plt.legend(bbox_to_anchor=(0, -0.15), loc=2)
     plt.grid(True)
-    plt.savefig('graphs/' + filename + ".png", bbox_inches='tight')
+    plt.savefig('graphs/' + lang + '/' + filename + ".png", bbox_inches='tight')
 
 
 for mode in ('num', 'bignum', 'dhke'):
