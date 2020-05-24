@@ -8,7 +8,6 @@ def attributes(mode='num', type='absolute', lang='en'):
     title = "Comparison of finite field modular exponentiation algorithms for small polynomials"
     xlabel = "GF(2^k) order k"
     ylabel = "Time in seconds per 10000 exponentiations"
-    relative = type == 'relative'
     if mode == 'bignum':
         filename += '_bignum'
     elif mode == 'dhke':
@@ -20,7 +19,7 @@ def attributes(mode='num', type='absolute', lang='en'):
         elif mode == 'dhke':
             title = "Comparison of finite field modular exponentiation algorithms for DHKE implementations"
             ylabel = "Time in seconds per key exchange"
-        if relative:
+        if type == 'relative':
             ylabel = ylabel.replace("Time in seconds", "Percentage of time")
     elif lang == 'ru':
         algo_types = ["Алгоритм 'слева направо'", "Алгоритм Монтгомери", "Параллельный алгоритм Монтгомери"]
@@ -33,14 +32,15 @@ def attributes(mode='num', type='absolute', lang='en'):
         elif mode == 'dhke':
             title = "Сравнение алгоритмов возведения в степень по модулю для алгоритма Диффи-Хеллмана"
             ylabel = "Время на операцию обмена ключами"
-        if relative:
+        if type == 'relative':
             ylabel = ylabel.replace("Время", "Процент времени")
-    return filename, relative, title, xlabel, ylabel, algo_types
+    return filename, type, lang, title, xlabel, ylabel, algo_types
 
 
 def draw_graph(params):
-    filename, relative, title, xlabel, ylabel, algo_types = params
+    filename, type, lang, title, xlabel, ylabel, algo_types = params
     input_file = filename + '.txt'
+    plt.clf()
     bit_length = []
     data = [[], [], []]
     with open(input_file) as f:
@@ -54,7 +54,7 @@ def draw_graph(params):
                 bit_length.append(algo_bit_length)
     bit_length.sort()
     print(bit_length)
-    if not relative:
+    if type != 'relative':
         for algo_index in range(3):
             data[algo_index].sort(key=lambda algo_data: algo_data[0])
             algo_time = []
@@ -65,7 +65,7 @@ def draw_graph(params):
                 algo_time.append(float(algo_time_sum / len(times_bit_length)))
             clr = "bgrcmykw"
             plt.plot(bit_length, algo_time, color=clr[algo_index], label=algo_types[algo_index])
-    elif relative:
+    elif type == 'relative':
         data[0].sort(key=lambda algo_data: algo_data[0])
         reference_algo_time = []
         for algo_bit_length in bit_length:
@@ -84,9 +84,11 @@ def draw_graph(params):
             clr = "bgrcmykw"
             plt.plot(bit_length, algo_time, color=clr[algo_index], label=algo_types[algo_index])
 
-    if relative:
+    if type == 'relative':
         filename += "_percent"
         plt.ylim(0, 100)
+    if lang == 'ru':
+        filename += '_ru'
 
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
