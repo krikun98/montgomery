@@ -27,10 +27,8 @@ def benchmark(irp):
     res_file = open(filename, "a+")
     k = irp.bit_length()
     print(k)
-    r = 1 << (k - 1)
-    nums = [random.randint(r >> 1, r - 1) for _ in range(length)]
-    e = random.randint(r >> 1, r - 1)
-
+    nums = [random.randint(1 << (k-2), 1 << (k-1)) for _ in range(length)]
+    e = random.randint(1 << (k-2), 1 << (k-1))
     res = []
     t0 = time.perf_counter()
     for num in nums:
